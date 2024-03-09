@@ -2,6 +2,7 @@
 
 - snforge - 0.19.0
 - sncast - 0.19.0
+- rustc - 1.76.0
 
 ## Prerequisites [Maybe not needed ?]
 
