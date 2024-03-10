@@ -37,6 +37,7 @@ snfoundryup -v 0.19.0
 
 2. Run a local network in the first terminal:
 
+
 ```bash
 yarn chain
 ```
@@ -51,6 +52,9 @@ This command starts a local Starknet network using Devnet. The network runs on y
 
 ```
 yarn deploy
+```
+```
+yarn deploy:sepolia
 ```
 
 This command deploys a test smart contract to the local network. The contract is located in `packages/snfoundry/src` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/snfoundry/scripts/deploy` to deploy the contract to the network. You can also customize the deploy script.

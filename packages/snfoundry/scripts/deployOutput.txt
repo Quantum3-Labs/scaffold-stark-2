@@ -1,4 +1,10 @@
-HelloStarknet Class Hash 0xb080ac08a554ec3f3f7dcfabe1b9d9cc10ef26d75e80c0a773f164a4956060
-HelloStarknet ABI [{"type":"impl","name":"HelloStarknetImpl","interface_name":"contracts::IHelloStarknet"},{"type":"interface","name":"contracts::IHelloStarknet","items":[{"type":"function","name":"increase_balance","inputs":[{"name":"amount","type":"core::felt252"}],"outputs":[],"state_mutability":"external"},{"type":"function","name":"get_balance","inputs":[],"outputs":[{"type":"core::felt252"}],"state_mutability":"view"},{"type":"function","name":"get_balance2","inputs":[],"outputs":[{"type":"core::felt252"}],"state_mutability":"view"}]},{"type":"event","name":"contracts::HelloStarknet::Event","kind":"enum","variants":[]}]
-HelloStarknet Address 0x7791302f48d0c1b385bd89a8ad45d5a395b1cef642ecf8ab881c5991827d5bd
-All Setup Done
+Proceeding with network sepolia
+Error TypeError: Cannot read properties of undefined (reading 'signDeclareTransaction')
+    at Account.buildDeclarePayload (/Users/matveydergunov/Desktop/scaffold-stark-2/node_modules/starknet/dist/index.js:4758:41)
+    at Account.estimateDeclareFee (/Users/matveydergunov/Desktop/scaffold-stark-2/node_modules/starknet/dist/index.js:4452:51)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Account.getSuggestedMaxFee (/Users/matveydergunov/Desktop/scaffold-stark-2/node_modules/starknet/dist/index.js:4738:23)
+    at async Account.declare (/Users/matveydergunov/Desktop/scaffold-stark-2/node_modules/starknet/dist/index.js:4591:51)
+    at async Account.declareAndDeploy (/Users/matveydergunov/Desktop/scaffold-stark-2/node_modules/starknet/dist/index.js:4653:19)
+    at async deployContract (/Users/matveydergunov/Desktop/scaffold-stark-2/packages/snfoundry/scripts_js/deploy.js:58:33)
+    at async deployScript (/Users/matveydergunov/Desktop/scaffold-stark-2/packages/snfoundry/scripts_js/deploy.js:83:7)
