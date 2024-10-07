@@ -9,10 +9,16 @@ import {
 import { useTargetNetwork } from "~~/hooks/scaffold-stark/useTargetNetwork";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-stark/useScaffoldReadContract";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-stark/useScaffoldEventHistory";
+import useScaffoldEthBalance from "~~/hooks/scaffold-stark/useScaffoldEthBalance";
+import useScaffoldStrkBalance from "~~/hooks/scaffold-stark/useScaffoldStrkBalance";
+import { useNativeCurrencyPrice } from "~~/hooks/scaffold-stark/useNativeCurrencyPrice";
+import { useGlobalState } from "~~/services/store/store";
+import { useSwitchNetwork } from "~~/hooks/scaffold-stark/useSwitchNetwork";
 import { ContractName } from "~~/utils/scaffold-stark/contract";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-stark/useScaffoldWriteContract";
 import { InputBase, IntegerInput } from "~~/components/scaffold-stark/";
 import { parseUnits } from "ethers";
+import { Skeleton } from "@radix-ui/themes";
 
 const HooksExample: React.FC = () => {
   const [contractName, setContractName] =
@@ -20,6 +26,8 @@ const HooksExample: React.FC = () => {
   const [newGreeting, setNewGreeting] = useState<string>("");
   const [amountEth, setAmountEth] = useState<string>("");
   const [fromBlock, setFromBlock] = useState<bigint>(0n);
+  // Commented code for useSwitchNetwork hook
+  //const [selectedNetwork, setSelectedNetwork] = useState<string>("mainnet");
 
   const convertToWei = (amount: string) => {
     try {
@@ -35,6 +43,22 @@ const HooksExample: React.FC = () => {
   const { data: contract, isLoading: isContractLoading } = useScaffoldContract({
     contractName: contractName as ContractName,
   });
+
+  const { formatted: ethBalance, isLoading: isEthBalanceLoading } =
+    useScaffoldEthBalance({
+      address: contract?.address,
+    });
+
+  const { formatted: strkBalance, isLoading: isStrkBalanceLoading } =
+    useScaffoldStrkBalance({
+      address: contract?.address,
+    });
+
+  useNativeCurrencyPrice();
+  const nativeCurrencyPrice = useGlobalState(
+    (state) => state.nativeCurrencyPrice,
+  );
+  const strkCurrencyPrice = useGlobalState((state) => state.strkCurrencyPrice);
 
   const { targetNetwork } = useTargetNetwork();
 
@@ -78,6 +102,18 @@ const HooksExample: React.FC = () => {
       watch: true,
     });
 
+  // Commented code for useSwitchNetwork hook
+  // const { switchNetwork } = useSwitchNetwork();
+
+  // const handleSwitchNetwork = async () => {
+  //   try {
+  //     await switchNetwork(selectedNetwork);
+  //     console.log(`Switched to ${selectedNetwork}`);
+  //   } catch (error) {
+  //     console.error("Failed to switch network:", error);
+  //   }
+  // }
+
   const handleSetGreeting = async () => {
     try {
       await setGreetingMulti();
@@ -110,24 +146,60 @@ const HooksExample: React.FC = () => {
         <div className="rounded-[5px] bg-base-100 border border-gradient p-4 relative shadow">
           <div className="trapeze"></div>
           <h2 className="text-xl font-semibold mb-4">
-            Contract Information (useScaffoldContract)
+            Contract Information (<code>useScaffoldContract</code>)
           </h2>
           <div>
-            {isContractLoading ? (
-              <p>Loading contract...</p>
-            ) : contract ? (
+            {isContractLoading && <Skeleton />}
+            {!isContractLoading && contract ? (
               <p className="break-words">Contract loaded: {contract.address}</p>
             ) : (
               <p>No contract loaded</p>
             )}
           </div>
         </div>
+        {/* ETH Balance */}
+        <div className="rounded-[5px] bg-base-100 border border-gradient p-4 relative shadow">
+          <div className="trapeze"></div>
+          <h2 className="text-xl font-semibold mb-4">
+            Contract ETH Balance (<code>useScaffoldEthBalance</code>)
+          </h2>
+          {isEthBalanceLoading && <Skeleton />}
+          {!isEthBalanceLoading && contract ? (
+            <p>{ethBalance} ETH</p>
+          ) : (
+            <p>No contract loaded</p>
+          )}
+        </div>
+
+        {/* STRK Balance */}
+        <div className="rounded-[5px] bg-base-100 border border-gradient p-4 relative shadow">
+          <div className="trapeze"></div>
+          <h2 className="text-xl font-semibold mb-4">
+            Contract STRK Balance (<code>useScaffoldStrkBalance</code>)
+          </h2>
+          {isStrkBalanceLoading && <Skeleton />}
+          {!isStrkBalanceLoading && contract ? (
+            <p>{strkBalance} STRK</p>
+          ) : (
+            <p>No contract loaded</p>
+          )}
+        </div>
+
+        {/* Native Currency Price */}
+        <div className="rounded-[5px] bg-base-100 border border-gradient p-4 relative shadow">
+          <div className="trapeze"></div>
+          <h2 className="text-xl font-semibold mb-4">
+            Currency Price (<code>useNativeCurrencyPrice</code>)
+          </h2>
+          <p>ETH Price: ${nativeCurrencyPrice}</p>
+          <p>STRK Price: ${strkCurrencyPrice}</p>
+        </div>
 
         {/* Set Greeting */}
         <div className="rounded-[5px] bg-base-100 border border-gradient p-4 relative shadow">
           <div className="trapeze"></div>
           <h2 className="text-xl font-semibold mb-4">
-            Set Greeting (useScaffoldEventHistory)
+            Set Greeting (<code>useScaffoldEventHistory</code>)
           </h2>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">
@@ -163,12 +235,11 @@ const HooksExample: React.FC = () => {
         <div className="rounded-[5px] bg-base-100 border border-gradient p-4 relative shadow">
           <div className="trapeze"></div>
           <h2 className="text-xl font-semibold mb-4">
-            Current Greeting (useScaffoldReadContract)
+            Current Greeting (<code>useScaffoldReadContract</code>)
           </h2>
           <div>
-            {isGreetingLoading ? (
-              <p>Loading greeting...</p>
-            ) : greeting !== undefined ? (
+            {isGreetingLoading && <Skeleton />}
+            {!isGreetingLoading && greeting !== undefined ? (
               <p className="break-words">{`Greeting: ${greeting}`}</p>
             ) : (
               <p>No greeting set</p>
@@ -180,12 +251,11 @@ const HooksExample: React.FC = () => {
         <div className="rounded-[5px] bg-base-100 border border-gradient p-4 relative shadow">
           <div className="trapeze"></div>
           <h2 className="text-xl font-semibold mb-4">
-            Premium Status (useScaffoldReadContract)
+            Premium Status (<code>useScaffoldReadContract</code>)
           </h2>
           <div>
-            {isPremiumLoading ? (
-              <p>Loading premium status...</p>
-            ) : isPremium !== undefined ? (
+            {isPremiumLoading && <Skeleton />}
+            {!isPremiumLoading && isPremium !== undefined ? (
               <p>{`Premium: ${isPremium ? "Yes" : "No"}`}</p>
             ) : (
               <p>Unable to fetch premium status</p>
@@ -197,7 +267,7 @@ const HooksExample: React.FC = () => {
         <div className="rounded-[5px] bg-base-100 border border-gradient p-4 pb-8 md:pb-4 relative shadow">
           <div className="trapeze"></div>
           <h2 className="text-xl font-semibold mb-4">
-            Withdraw (useScaffoldWriteContract)
+            Withdraw (<code>useScaffoldWriteContract</code>)
           </h2>
           <button
             onClick={handleWithdraw}
@@ -211,16 +281,39 @@ const HooksExample: React.FC = () => {
         <div className="rounded-[5px] bg-base-100 border border-gradient p-4 relative shadow">
           <div className="trapeze"></div>
           <h2 className="text-xl font-semibold mb-4">
-            Network Information (useTargetNetwork)
+            Network Information (<code>useTargetNetwork</code>)
           </h2>
           <p>Current Network: {targetNetwork.name}</p>
         </div>
+
+        {/* Switch Network
+        <div className="rounded-[5px] bg-base-100 border border-gradient p-4 relative shadow">
+          <div className="trapeze"></div>
+          <h2 className="text-xl font-semibold mb-4">
+            Switch Network (useSwitchNetwork)
+          </h2>
+          <select
+            value={selectedNetwork}
+            onChange={(e) => setSelectedNetwork(e.target.value)}
+            className="select select-bordered w-full mb-4"
+          >
+            <option value="mainnet">Mainnet</option>
+            <option value="testnet">Testnet</option>
+            <option value="devnet">Devnet</option>
+          </select>
+          <button
+            onClick={handleSwitchNetwork}
+            className="btn bg-gradient-dark btn-sm shadow-none border-none text-white"
+          >
+            Switch Network
+          </button>
+        </div>     */}
 
         {/* Greeting Changed Events */}
         <div className="rounded-[5px] bg-base-100 border border-gradient p-4 relative shadow">
           <div className="trapeze"></div>
           <h2 className="text-xl font-semibold mb-4">
-            Greeting Changed Events (useScaffoldEventHistory)
+            Greeting Changed Events (<code>useScaffoldEventHistory</code>)
           </h2>
           <ol type="1">
             {greetingChangedEvents?.map((item, i) => (
